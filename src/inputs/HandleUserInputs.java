@@ -32,8 +32,7 @@ public class HandleUserInputs {
                     chosenScan = input.nextLine();
                 }
                 String target = checkingTarget(input, logger);
-                HandleDisplayForUser.printProcessingScanMessage(Integer.parseInt(chosenScan) , target);
-                Utils.
+                setSingleScan(target , Integer.parseInt(chosenScan));
             }
             default ->{
                 HandleDisplayForUser.printErrorMessage("Wrong input, choose available options");
@@ -79,11 +78,27 @@ public class HandleUserInputs {
         try{
             Map <String , String> parameters = new HashMap<>();
             parameters.put("target" , target);
-            parameters.put("scan_type" , "normal");
+            parameters.put("scan_type" , "single");
             HandleDisplayForUser.printMessage("Audit scan on target : " + target);
             HandleDisplayForUser.printMessage("This will take several minutes, please wait until the scan end");
             HandleDisplayForUser.printMessage("Scanning...");
             BridgeBetweenClasses.runAuditAction(parameters);
+        }
+        catch(Exception e){
+            e.printStackTrace();
+            Utils.getLogger().log(Level.SEVERE , e.getMessage());
+        }
+    }
+    private static void setSingleScan(String target , int chosenScan){
+        try {
+            String scanName = Utils.optionsToScanNames(chosenScan);
+            Map<String, String> parameters = new HashMap<>();
+            parameters.put("target", target);
+            parameters.put("scan_type", "single");
+            HandleDisplayForUser.printProcessingScanMessage(chosenScan , target);
+            HandleDisplayForUser.printMessage("This will take several minutes, please wait until the scan end");
+            HandleDisplayForUser.printMessage("Scanning...");
+            BridgeBetweenClasses.runScanAction(scanName , parameters);
         }
         catch(Exception e){
             e.printStackTrace();

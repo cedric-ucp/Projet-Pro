@@ -53,6 +53,28 @@ public class Utils {
     public void responseLog(Response response , int status , String state){
         LOG.log(Level.INFO , "State : " + state + " || status code : " + status + " || message : " + response.message());
     }
+    public static String optionsToScanNames(int option){
+        switch (option) {
+            case 1 -> {
+                return Const.SCAN_PORT;
+            }
+            case 2 -> {
+                return Const.AGGRESSIVE_SCAN;
+            }
+            case 3 -> {
+                return Const.OS_INFO_SCAN;
+            }
+            case 4 -> {
+                return Const.SERVICE_DETECTION_SCAN;
+            }
+            case 5 -> {
+                return Const.FIREWALLING_SCAN;
+            }
+            default ->{
+                return null;
+            }
+        }
+    }
     public void buildParamRunScan(Map <String , String> data , String scan_id){
         data.put("scan_id" , scan_id);
     }

@@ -31,11 +31,11 @@ public class HandleDisplayForUser {
     }
     public static void printProcessingScanMessage(int scan , String target){
         switch(scan){
-            case 1 -> printMessage("Processing " + Const.SCAN_PORT + " on target " + target + "...");
-            case 2 -> printMessage("Processing " + Const.AGGRESSIVE_SCAN + " on target " + target + "...");
-            case 3 -> printMessage("Processing " + Const.OS_INFO_SCAN + " on target " + target + "...");
-            case 4 -> printMessage("Processing " + Const.SERVICE_DETECTION_SCAN + " on target " + target + "...");
-            case 5 -> printMessage("Processing " + Const.FIREWALLING_SCAN + " on target " + target + "...");
+            case 1 -> printMessage("Processing " + Const.SCAN_PORT + " on target " + target);
+            case 2 -> printMessage("Processing " + Const.AGGRESSIVE_SCAN + " on target " + target);
+            case 3 -> printMessage("Processing " + Const.OS_INFO_SCAN + " on target " + target);
+            case 4 -> printMessage("Processing " + Const.SERVICE_DETECTION_SCAN + " on target " + target);
+            case 5 -> printMessage("Processing " + Const.FIREWALLING_SCAN + " on target " + target);
         }
     }
     public static void printErrorMessage(String message){

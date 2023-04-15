@@ -22,9 +22,18 @@ public class BridgeBetweenClasses {
             Utils.getLogger().log(Level.SEVERE, "Target or scan_type not set");
         }
     }
-    public static void runScanAction(int chosenScan , String target){
+    public static void runScanAction(String scanName , Map<String , String> data){
         Connection connection = new Connection();
+        for(Map.Entry entry : data.entrySet()){
+            connection.getData().put((String) entry.getKey() , (String) entry.getValue());
+        }
+        if(data.containsKey("target") && data.containsKey("scan_type")) {
+            connection.launchRequest(scanName);
+        }
+        else {
+            HandleDisplayForUser.printErrorMessage("Target or scan_type not set");
+            Utils.getLogger().log(Level.SEVERE, "Target or scan_type not set");
+        }
 
-        connection.launchRequest(Const.SINGLE_SCAN);
     }
 }

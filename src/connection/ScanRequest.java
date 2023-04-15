@@ -42,8 +42,8 @@ public class ScanRequest {
     }
 
     public static void aggressiveScan(Map<String , String> data){
-        data.put("command" , "normal");
         data.put("options" , "t4");
+        data.put("command" , "normal");
         data.put("schedule" , "now");
     }
 
@@ -52,7 +52,7 @@ public class ScanRequest {
         data.put("options" , "");
         data.put("schedule" , "now");
     }
-    public static void runAuditRequest(Map <String , String> data , String nextScan){
+    public static void buildScan(Map <String , String> data , String nextScan){
         data.put("scan_type" , "single");
         switch (nextScan) {
             case Const.AGGRESSIVE_SCAN -> aggressiveScan(data);

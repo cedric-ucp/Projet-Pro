@@ -21,10 +21,10 @@ public class Const {
     public static String SCAN_INFO = "SCAN_INFO";
     public static String SCAN_STATUS = "SCAN_STATUS";
     public static String SCAN_RESULTS = "SCAN_RESULTS";
-    public static final String START_SCAN_URL = "http://api.nmap.online/v01/start_scan";
-    public static final String SCAN_INFO_URL = "http://api.nmap.online/v01/scan_info";
-    public static final String SCAN_STATUS_URL = "http://api.nmap.online/v01/check_scan_status";
-    public static final String SCAN_RESULTS_URL = "http://api.nmap.online/v01/scan_result";
+    public static final String START_SCAN_URL = "https://api.nmap.online/v01/start_scan";
+    public static final String SCAN_INFO_URL = "https://api.nmap.online/v01/scan_info";
+    public static final String SCAN_STATUS_URL = "https://api.nmap.online/v01/check_scan_status";
+    public static final String SCAN_RESULTS_URL = "https://api.nmap.online/v01/scan_result";
     public static final String AUDIT_ACTION = "audit";
     public static final String SINGLE_SCAN = "nmap_command";
     public static final String TARGET = "target";

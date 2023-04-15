@@ -17,12 +17,9 @@ public class Connection {
     private final Utils utils = new Utils();
     private final Logger LOG;
     private Response response = null;
-    OkHttpClient client = new OkHttpClient();
     RequestBody body = null;
     private final Map<String , String> data = new HashMap<>();
-    private boolean scanFinished = false;
     private String scan_id = "";
-
     public Connection(){
         LOG = Utils.getLogger();
     }
@@ -39,7 +36,7 @@ public class Connection {
             request = builder.build();
             if(response != null)
                 response = null;
-            response = client.newCall(request).execute();
+            response = new OkHttpClient().newCall(request).execute();
             handleResponse(response.code() , state);
         }
         catch (Exception e){
@@ -110,13 +107,21 @@ public class Connection {
     }
     public void launchRequest(String action){
         if(action.equals(Const.AUDIT_ACTION)){
-            handleAuditScanState();
-            sendRequest(Const.START_SCAN);
+            String target = "";
+            if(data.get(Const.TARGET) != null && !data.get(Const.TARGET).isEmpty()) {
+                target = data.get(Const.TARGET);
+            }
+            while(!handleAuditScanState()) {
+                if(target != null && !target.isEmpty())
+                    data.put(Const.TARGET , target);
+                else{
+                    LOG.log(Level.SEVERE , "target parameter not found");
+                }
+                sendRequest(Const.START_SCAN);
+            }
         }
         else{
-            data.put("target" , "www.certifiedhacker.com");
-            data.put("scan_type" , "single");
-            ScanRequest.osInfoScan(data);
+            ScanRequest.buildScan(data , action);
             sendRequest(Const.START_SCAN);
         }
     }
@@ -141,42 +146,58 @@ public class Connection {
             return Const.SCAN_RESULTS_URL;
     }
 
-    private void handleAuditScanState(){
-        if(!Const.SCAN_PORT_DONE && !Const.AGGRESSIVE_SCAN_DONE && !Const.MALWARE_DETECTION_SCAN_DONE && !Const.SERVICE_DETECTION_SCAN_DONE
-            && !Const.OS_INFO_SCAN_DONE && !Const.FIREWALLING_SCAN_DONE){
-            ScanRequest.runAuditRequest(data, Const.SCAN_PORT);
-            Const.SCAN_PORT_DONE = true;
-            LOG.log(Level.INFO , "Starting " + Const.SCAN_PORT);
-        }
-        else if(Const.SCAN_PORT_DONE && !Const.AGGRESSIVE_SCAN_DONE && !Const.MALWARE_DETECTION_SCAN_DONE && !Const.SERVICE_DETECTION_SCAN_DONE
+    private boolean handleAuditScanState(){
+
+        if(Const.SCAN_PORT_DONE && !Const.AGGRESSIVE_SCAN_DONE && !Const.MALWARE_DETECTION_SCAN_DONE && !Const.SERVICE_DETECTION_SCAN_DONE
                 && !Const.OS_INFO_SCAN_DONE && !Const.FIREWALLING_SCAN_DONE){
-            ScanRequest.runAuditRequest(data, Const.AGGRESSIVE_SCAN);
+            ScanRequest.buildScan(data, Const.AGGRESSIVE_SCAN);
             Const.AGGRESSIVE_SCAN_DONE = true;
             LOG.log(Level.INFO , "Starting " + Const.AGGRESSIVE_SCAN);
+            HandleDisplayForUser.printMessage("Starting " + Const.AGGRESSIVE_SCAN);
+            return false;
+        }
+        else if(!Const.SCAN_PORT_DONE && !Const.AGGRESSIVE_SCAN_DONE && !Const.MALWARE_DETECTION_SCAN_DONE && !Const.SERVICE_DETECTION_SCAN_DONE
+                && !Const.OS_INFO_SCAN_DONE && !Const.FIREWALLING_SCAN_DONE){
+            ScanRequest.buildScan(data, Const.SCAN_PORT);
+            Const.SCAN_PORT_DONE = true;
+            LOG.log(Level.INFO , "Starting " + Const.SCAN_PORT);
+            HandleDisplayForUser.printMessage("Starting " + Const.SCAN_PORT);
+            return false;
         }
         else if(Const.SCAN_PORT_DONE && Const.AGGRESSIVE_SCAN_DONE && !Const.MALWARE_DETECTION_SCAN_DONE && !Const.SERVICE_DETECTION_SCAN_DONE
                 && !Const.OS_INFO_SCAN_DONE && !Const.FIREWALLING_SCAN_DONE){
-            ScanRequest.runAuditRequest(data, Const.OS_INFO_SCAN);
+            ScanRequest.buildScan(data, Const.OS_INFO_SCAN);
             Const.OS_INFO_SCAN_DONE = true;
             LOG.log(Level.INFO , "Starting " + Const.OS_INFO_SCAN);
+            return false;
         }
         else if(Const.SCAN_PORT_DONE && Const.AGGRESSIVE_SCAN_DONE && !Const.MALWARE_DETECTION_SCAN_DONE && !Const.SERVICE_DETECTION_SCAN_DONE
                 && Const.OS_INFO_SCAN_DONE && !Const.FIREWALLING_SCAN_DONE){
-            ScanRequest.runAuditRequest(data, Const.SERVICE_DETECTION_SCAN);
+            ScanRequest.buildScan(data, Const.SERVICE_DETECTION_SCAN);
             Const.SERVICE_DETECTION_SCAN_DONE = true;
             LOG.log(Level.INFO , "Starting " + Const.SERVICE_DETECTION_SCAN);
+            HandleDisplayForUser.printMessage("Starting " + Const.SERVICE_DETECTION_SCAN);
+            return false;
         }
         else if(Const.SCAN_PORT_DONE && Const.AGGRESSIVE_SCAN_DONE && !Const.MALWARE_DETECTION_SCAN_DONE && Const.SERVICE_DETECTION_SCAN_DONE
                 && Const.OS_INFO_SCAN_DONE && !Const.FIREWALLING_SCAN_DONE){
-            ScanRequest.runAuditRequest(data, Const.MALWARE_DETECTION_SCAN);
+            ScanRequest.buildScan(data, Const.MALWARE_DETECTION_SCAN);
             Const.MALWARE_DETECTION_SCAN_DONE = true;
             LOG.log(Level.INFO , "Starting " + Const.MALWARE_DETECTION_SCAN);
+            HandleDisplayForUser.printMessage("Starting " + Const.MALWARE_DETECTION_SCAN);
+            return false;
         }
         else if(Const.SCAN_PORT_DONE && Const.AGGRESSIVE_SCAN_DONE && Const.MALWARE_DETECTION_SCAN_DONE && Const.SERVICE_DETECTION_SCAN_DONE
                 && Const.OS_INFO_SCAN_DONE && !Const.FIREWALLING_SCAN_DONE){
-            ScanRequest.runAuditRequest(data , Const.FIREWALLING_SCAN);
+            ScanRequest.buildScan(data , Const.FIREWALLING_SCAN);
             Const.FIREWALLING_SCAN_DONE = true;
             LOG.log(Level.INFO , "Starting " + Const.FIREWALLING_SCAN);
+            HandleDisplayForUser.printMessage("Starting " + Const.FIREWALLING_SCAN);
+            return false;
+        }
+        else {
+            LOG.log(Level.INFO, "Audit scan finished");
+            return true;
         }
     }
     public Map<String , String> getData(){
