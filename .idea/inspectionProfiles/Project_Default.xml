@@ -6,6 +6,7 @@
         <set>
           <option value="NMAP-API-KEY" />
           <option value="key" />
+          <option value="apiKey" />
         </set>
       </option>
     </inspection_tool>

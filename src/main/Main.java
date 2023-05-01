@@ -23,6 +23,6 @@ public class Main {
         headerParams.put("content-type" , "multipart/form-data");*/
 
         ShodanApi shodanApi = new ShodanApi ();
-        shodanApi.auditHost("certifiedhacker.com");
+        shodanApi.auditHost("162.241.216.11");
     }
 }

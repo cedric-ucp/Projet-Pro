@@ -1,6 +1,8 @@
 package utils;
 import okhttp3.Response;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.FileHandler;
@@ -87,5 +89,18 @@ public class Utils {
     }
     public static boolean valueExists(String string){
         return string != null && !string.isEmpty() && !string.isBlank() && !string.equals("unknown");
+    }
+    public static ArrayList<String> stringToArray(String string , String delimiter){
+        System.out.println("String to Array");
+        string = string.substring(1 , string.length() - 1);
+        System.out.println("substring 1 : " + string);
+        ArrayList <String> vulnerabilities = new ArrayList<>();
+        for (String s : string.split(delimiter))
+            vulnerabilities.add(s);
+
+        if(vulnerabilities.size() > 0)
+            return vulnerabilities;
+        else
+            return null;
     }
 }

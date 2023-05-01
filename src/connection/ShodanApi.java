@@ -34,13 +34,14 @@ public class ShodanApi{
                     buildBannerData(currentBanner);
                     currentBanner = bannerIterator.next();
                 }
-                System.out.println(hostData);
+                System.out.println("hostData : " + hostData.get("vulnerability"));
                 System.out.println("\n" + bannerData);
             }
         }
         catch(Exception e){
             Utils.getLogger().log(Level.SEVERE , e.getMessage());   
         }
+        startCVEResearch();
     }
     public void buildBannerData(Banner banner){
         if(Utils.valueExists(banner.getTitle()) && !bannerData.containsKey("title"))
@@ -79,4 +80,7 @@ public class ShodanApi{
                 && bannerData.containsKey("data");
     }
 
+    private void startCVEResearch(){
+        CVE cve = new CVE ("https://services.nvd.nist.gov/rest/json/cves/2.0?cveId=" , hostData.get("vulnerability"));
+    }
 }
