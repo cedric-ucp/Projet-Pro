@@ -5,6 +5,7 @@
       <option name="customHeaders">
         <set>
           <option value="NMAP-API-KEY" />
+          <option value="key" />
         </set>
       </option>
     </inspection_tool>

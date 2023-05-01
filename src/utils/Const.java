@@ -45,6 +45,9 @@ public class Const {
     public static boolean MALWARE_DETECTION_SCAN_DONE = false;
     public static boolean SERVICE_DETECTION_SCAN_DONE = false;;
     public static boolean FIREWALLING_SCAN_DONE = false;
-    public static final int WINDOW_WIDTH = 400;
-    public static final int WINDOW_HEIGHT = 400;
+    public static String NMAP_API_KEY_VALUE = "dkjhj9iacgm63abk3bbpdzrgap7ie3b2zgikl9bxfsekmmjg";
+    public static String NMAP_API_KEY_KEY = "NMAP-API-KEY";
+    public static String NMAP_CONTENT_TYPE_KEY = "content-type";
+    public static String NMAP_CONTENT_TYPE_VALUE = "multipart/form-data";
+    public static String SHODAN_API_KEY = "9MN1Bi8M3nkCZSsxIVInWAbqCpgFXUs7";
 }

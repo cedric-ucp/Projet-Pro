@@ -1,6 +1,7 @@
 package utils;
 import okhttp3.Response;
 
+import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.FileHandler;
 import java.util.logging.Level;
@@ -50,7 +51,7 @@ public class Utils {
             return Const.REQUEST_UNKNOWN_STATUS;
     }
 
-    public void responseLog(Response response , int status , String state){
+    public static void responseLog(Response response, int status, String state){
         LOG.log(Level.INFO , "State : " + state + " || status code : " + status + " || message : " + response.message());
     }
     public static String optionsToScanNames(int option){
@@ -75,7 +76,16 @@ public class Utils {
             }
         }
     }
-    public void buildParamRunScan(Map <String , String> data , String scan_id){
+    public static void buildParamRunScan(Map <String , String> data , String scan_id){
         data.put("scan_id" , scan_id);
+    }
+    public static Map <String , String> buildNmapHeaderParams(){
+        Map <String , String> headerParams = new HashMap<>();
+        headerParams.put(Const.NMAP_CONTENT_TYPE_KEY , Const.NMAP_CONTENT_TYPE_VALUE);
+        headerParams.put(Const.NMAP_API_KEY_KEY , Const.NMAP_API_KEY_VALUE);
+        return headerParams;
+    }
+    public static boolean valueExists(String string){
+        return string != null && !string.isEmpty() && !string.isBlank() && !string.equals("unknown");
     }
 }

@@ -10,5 +10,7 @@
     <orderEntry type="library" name="squareup.okhttp3.mockwebserver" level="project" />
     <orderEntry type="library" name="eclipsesource.minimal.json" level="project" />
     <orderEntry type="library" name="github.bingoohuang.unirest.java" level="project" />
+    <orderEntry type="library" name="github.librepdf.openpdf" level="project" />
+    <orderEntry type="library" name="fooock.jshodan" level="project" />
   </component>
 </module>
