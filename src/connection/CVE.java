@@ -1,8 +1,6 @@
 package connection;
 
-import com.eclipsesource.json.Json;
-import com.eclipsesource.json.JsonObject;
-import com.eclipsesource.json.JsonValue;
+
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
@@ -11,15 +9,13 @@ import org.json.JSONObject;
 import utils.Utils;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.logging.Level;
 
 public class CVE{
-    private String url = "";
-    private final String apiKey = "a44b03e3-f9c2-49c9-b142-e4cc5cb66d39";
-    private HashMap<String , String> responseData = new HashMap<>();
-    private ArrayList<String> vulnerabilities;
+    private final String url;
+    private final HashMap <String , String> responseData = new HashMap<>();
+    private final ArrayList<String> vulnerabilities;
     public CVE(String url , String vulnerability){
         this.url = url;
         vulnerabilities = Utils.stringToArray(vulnerability , ",");
@@ -37,17 +33,21 @@ public class CVE{
             try {
                 Utils.getLogger().log(Level.INFO , "launch CVE request for cve : " + vulnerability);
                 Request.Builder builder = new Request.Builder();
+                String apiKey = "a44b03e3-f9c2-49c9-b142-e4cc5cb66d39";
                 builder.url(buildRequestUrl(vulnerability))
                         .addHeader("apiKey" , apiKey)
                         .get();
                 Request request = builder.build();
                 Response response = new OkHttpClient().newCall(request).execute();
                 Utils.responseLog(response , response.code() , "1");
-                String responseBody = response.body().string();
-                if(responseBody != null && !responseBody.isEmpty()){
-                    Utils.getLogger().log(Level.INFO, "response : " + responseBody);
-                    System.out.println("response : " + responseBody);
-                    handleResponseData(JSONObject.stringToValue(responseBody));
+
+                if(response.body() != null) {
+                    String responseBody = response.body().string();
+                    if (responseBody != null && !responseBody.isEmpty()){
+                        Utils.getLogger().log(Level.INFO, "response : " + responseBody);
+                        System.out.println("response : " + responseBody);
+                        handleResponseData(new JSONObject(responseBody));
+                    }
                 }
                 else
                     Utils.getLogger().log(Level.SEVERE , "No response from request");
@@ -62,23 +62,60 @@ public class CVE{
         Utils.getLogger().log(Level.INFO , "modified url " + modifiedUrl);
         return modifiedUrl;
     }
-    private void handleResponseData(Object responseBody){
-        JSONObject vulnerabilities;
+    private void handleResponseData(JSONObject responseBody){
+        JSONArray vulnerabilities;
         try {
             if (responseBody != null) {
-                vulnerabilities = (JSONObject) (JSONObject..get("vulnerabilities");
+                vulnerabilities = (JSONArray) responseBody.get("vulnerabilities");
+
                 if(vulnerabilities != null){
                     System.out.println("vulnerabilities : " + vulnerabilities);
-                    JSONObject cve = (JSONObject) vulnerabilities.get("cve");
-                    if(cve != null)
+                    JSONObject intel = (JSONObject) vulnerabilities.get(vulnerabilities.length() - 1);
+
+                    if(intel != null) {
+                        Utils.getLogger().log(Level.INFO , "cve : " + intel);
+                        JSONObject cve = (JSONObject) intel.get("cve");
                         System.out.println("cve : " + cve);
+                        String id = (String) cve.get("id");
+
+                       if(Utils.valueExists(id)) {
+                            System.out.println("id : " + id);
+                            responseData.put("cve_id", id);
+                        }
+                        else
+                            Utils.getLogger().log(Level.SEVERE , "Error : id jsonObject is null");
+
+                        String published = (String) cve.get("published");
+                        if(Utils.valueExists(published)){
+                            System.out.println("published : " + published);
+                            responseData.put("published" , published);
+                        }
+                        else
+                            Utils.getLogger().log(Level.SEVERE , "Error : published jsonObject is null");
+
+                        JSONArray descriptions = cve.getJSONArray("descriptions");
+
+                        if(descriptions != null && descriptions.length() > 0){
+                            JSONObject englishDescription = (JSONObject) descriptions.get(0);
+                            String description = (String) englishDescription.get("value");
+                            if(Utils.valueExists(description)){
+                                System.out.println("description : " + description);
+                                responseData.put("description" , description);
+                            }
+                            else
+                                Utils.getLogger().log(Level.SEVERE , "Error : value jsonObject is null");
+                        }
+                        else
+                            Utils.getLogger().log(Level.SEVERE , "Error : descriptions jsonArray is null or Empty");
+                    }
                     else
                         Utils.getLogger().log(Level.SEVERE , "Error : cve jsonObject is null");
                 }
                 else{
                     Utils.getLogger().log(Level.SEVERE , "vulnerabilities jsonObject is null");
                 }
-            } else {
+            }
+            else {
                 Utils.getLogger().log(Level.SEVERE, "Error : responseBody JsonObject is null");
             }
         }

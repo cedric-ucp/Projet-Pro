@@ -81,6 +81,6 @@ public class ShodanApi{
     }
 
     private void startCVEResearch(){
-        CVE cve = new CVE ("https://services.nvd.nist.gov/rest/json/cves/2.0?cveId=" , hostData.get("vulnerability"));
+       new CVE ("https://services.nvd.nist.gov/rest/json/cves/2.0?cveId=" , hostData.get("vulnerability"));
     }
 }
