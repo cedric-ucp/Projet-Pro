@@ -23,8 +23,6 @@ public class CVE{
             Utils.getLogger().log(Level.SEVERE , "Error parsing vulnerabilities object or no vulnerabilities to scan");
             return;
         }
-        Utils.getLogger().log(Level.INFO , "Url : " + this.url);
-        Utils.getLogger().log(Level.INFO , "vulnerabilities : " + vulnerability);
         for(String vul : vulnerabilities)
             sendRequest(vul);
     }
@@ -45,8 +43,7 @@ public class CVE{
                     String responseBody = response.body().string();
                     if (responseBody != null && !responseBody.isEmpty()){
                         Utils.getLogger().log(Level.INFO, "response : " + responseBody);
-                        System.out.println("response : " + responseBody);
-                        handleResponseData(new JSONObject(responseBody));
+                        fillResponseData(new JSONObject(responseBody));
                     }
                 }
                 else
@@ -62,54 +59,23 @@ public class CVE{
         Utils.getLogger().log(Level.INFO , "modified url " + modifiedUrl);
         return modifiedUrl;
     }
-    private void handleResponseData(JSONObject responseBody){
-        JSONArray vulnerabilities;
+    private void fillResponseData(JSONObject responseBody){
         try {
             if (responseBody != null) {
-                vulnerabilities = (JSONArray) responseBody.get("vulnerabilities");
-
+                JSONArray vulnerabilities = (JSONArray) responseBody.get("vulnerabilities");
                 if(vulnerabilities != null){
-                    System.out.println("vulnerabilities : " + vulnerabilities);
-                    JSONObject intel = (JSONObject) vulnerabilities.get(vulnerabilities.length() - 1);
-
-                    if(intel != null) {
-                        Utils.getLogger().log(Level.INFO , "cve : " + intel);
-                        JSONObject cve = (JSONObject) intel.get("cve");
-                        System.out.println("cve : " + cve);
-                        String id = (String) cve.get("id");
-
-                       if(Utils.valueExists(id)) {
-                            System.out.println("id : " + id);
-                            responseData.put("cve_id", id);
+                    JSONObject vulnData = (JSONObject) vulnerabilities.get(vulnerabilities.length() - 1);
+                    if(vulnData != null) {
+                        Utils.getLogger().log(Level.INFO , "cve : " + vulnData);
+                        JSONObject cve = (JSONObject) vulnData.get("cve");
+                        if(cve != null) {
+                            getCveData(cve);
                         }
                         else
-                            Utils.getLogger().log(Level.SEVERE , "Error : id jsonObject is null");
-
-                        String published = (String) cve.get("published");
-                        if(Utils.valueExists(published)){
-                            System.out.println("published : " + published);
-                            responseData.put("published" , published);
-                        }
-                        else
-                            Utils.getLogger().log(Level.SEVERE , "Error : published jsonObject is null");
-
-                        JSONArray descriptions = cve.getJSONArray("descriptions");
-
-                        if(descriptions != null && descriptions.length() > 0){
-                            JSONObject englishDescription = (JSONObject) descriptions.get(0);
-                            String description = (String) englishDescription.get("value");
-                            if(Utils.valueExists(description)){
-                                System.out.println("description : " + description);
-                                responseData.put("description" , description);
-                            }
-                            else
-                                Utils.getLogger().log(Level.SEVERE , "Error : value jsonObject is null");
-                        }
-                        else
-                            Utils.getLogger().log(Level.SEVERE , "Error : descriptions jsonArray is null or Empty");
+                            Utils.getLogger().log(Level.SEVERE , "Error : cve jsonObject is null");
                     }
                     else
-                        Utils.getLogger().log(Level.SEVERE , "Error : cve jsonObject is null");
+                        Utils.getLogger().log(Level.SEVERE , "Error : vulnerability's intel jsonObject is null");
                 }
                 else{
                     Utils.getLogger().log(Level.SEVERE , "vulnerabilities jsonObject is null");
@@ -125,4 +91,105 @@ public class CVE{
             e.printStackTrace();
         }
     }
+
+    private void getCveData(JSONObject cve){
+        try {
+            String id = (String) cve.get("id");
+            if (Utils.valueExists(id)) {
+                responseData.put("cve_id", id);
+            }
+            else
+                Utils.getLogger().log(Level.SEVERE, "Error : id jsonObject is null");
+
+            String published = (String) cve.get("published");
+            if (Utils.valueExists(published)) {
+                responseData.put("published", published);
+            }
+            else
+                Utils.getLogger().log(Level.SEVERE, "Error : published jsonObject is null");
+
+            JSONArray descriptions = cve.getJSONArray("descriptions");
+            if (descriptions != null && descriptions.length() > 0) {
+                JSONObject englishDescription = (JSONObject) descriptions.get(0);
+                String description = (String) englishDescription.get("value");
+                if (Utils.valueExists(description)) {
+                    responseData.put("description", description);
+                }
+                else
+                    Utils.getLogger().log(Level.SEVERE, "Error : value jsonObject is null");
+            }
+            else
+                Utils.getLogger().log(Level.SEVERE, "Error : descriptions jsonArray is null or Empty");
+            getCveMetrics(cve);
+        }
+        catch(Exception e){
+            Utils.getLogger().log(Level.SEVERE , "Error while getting cve " + e);
+        }
+    }
+
+    private void getCveMetrics(JSONObject cve){
+       JSONObject metrics = cve.getJSONObject("metrics");
+       try {
+           if (metrics != null) {
+               JSONArray metricV31 = metrics.getJSONArray("cvssMetricV31");
+               if (metricV31 != null) {
+                   JSONObject cvssData = metricV31.getJSONObject(0).getJSONObject("cvssData");
+                   if (cvssData != null) {
+                       getCvssData(cvssData);
+                   }
+               }
+           }
+           else
+               Utils.getLogger().log(Level.SEVERE , "Error : metrics jsonArray is null");
+       }
+       catch(Exception e){
+           Utils.getLogger().log(Level.SEVERE , "Error while getting cveMetrics " + e);
+       }
+    }
+
+    private void getCvssData(JSONObject cvssData){
+        try {
+            if (cvssData.has("baseSeverity"))
+                responseData.put("baseSeverity", cvssData.getString("baseSeverity"));
+            if (cvssData.has("confidentialityImpact"))
+                responseData.put("confidentialityImpact", cvssData.getString("confidentialityImpact"));
+            if (cvssData.has("attackComplexity"))
+                responseData.put("attackComplexity", cvssData.getString("attackComplexity"));
+            if (cvssData.has("scope"))
+                responseData.put("scope", cvssData.getString("scope"));
+            if (cvssData.has("attackVector"))
+                responseData.put("attackVector", cvssData.getString("attackVector"));
+            if (cvssData.has("availabilityImpact"))
+                responseData.put("availabilityImpact", cvssData.getString("availabilityImpact"));
+            if (cvssData.has("integrityImpact"))
+                responseData.put("integrityImpact", cvssData.getString("integrityImpact"));
+            if (cvssData.has("privilegesRequired"))
+                responseData.put("privilegesRequired", cvssData.getString("privilegesRequired"));
+            if (cvssData.has("version"))
+                responseData.put("version", cvssData.getString("version"));
+            if (cvssData.has("userInteraction"))
+                responseData.put("userInteraction", cvssData.getString("userInteraction"));
+
+            System.out.println("responseData " + responseData);
+        }
+        catch(Exception e){
+            Utils.getLogger().log(Level.SEVERE, "Error while getting cvssData " + e);
+        }
+    }
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
