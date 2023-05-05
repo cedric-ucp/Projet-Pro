@@ -12,34 +12,37 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.logging.Level;
 
+import static java.lang.System.exit;
+
 public class ShodanApi{
     ShodanRestApi api = new ShodanRestApi(Const.SHODAN_API_KEY);
     Map <String , String> bannerData = new HashMap<>();
     Map <String , String> hostData = new HashMap<>();
     public void auditHost(String target){
         try {
+            System.out.println("host : " + target);
             Observable<Host> report = api.hostByIp(false, target);
             for (Host host : report.blockingIterable()) {
                 String[] vulnerabilities = host.getVulnerabilities();
                 String organization = host.getOrganization();
 
-                if (vulnerabilities != null && vulnerabilities.length > 0)
+                if (vulnerabilities != null && vulnerabilities.length > 0) {
                     hostData.put("vulnerability", Arrays.toString(vulnerabilities));
-                if (organization != null && !organization.isEmpty())
+                }
+                if (organization != null && !organization.isEmpty()) {
                     hostData.put("organization", organization);
-
+                }
                 Iterator<Banner> bannerIterator = host.getBanners().iterator();
                 Banner currentBanner = bannerIterator.next();
                 while (bannerIterator.hasNext() && currentBanner != null && !bannerDataisBuilt()){
                     buildBannerData(currentBanner);
                     currentBanner = bannerIterator.next();
                 }
-                System.out.println("hostData : " + hostData.get("vulnerability"));
-                System.out.println("\n" + bannerData);
             }
         }
         catch(Exception e){
-            Utils.getLogger().log(Level.SEVERE , e.getMessage());   
+            Utils.getLogger().log(Level.SEVERE , "Error while requesting Shodan api : " + e.getMessage());
+            exit(1);
         }
         startCVEResearch();
     }
@@ -79,8 +82,8 @@ public class ShodanApi{
                 && bannerData.containsKey("metadata") && bannerData.containsKey("port") && bannerData.containsKey("location") && bannerData.containsKey("sslInfo")
                 && bannerData.containsKey("data");
     }
-
     private void startCVEResearch(){
+        System.out.println("vulnerability : " + hostData.get("vulnerability"));
        new CVE ("https://services.nvd.nist.gov/rest/json/cves/2.0?cveId=" , hostData.get("vulnerability"));
     }
 }

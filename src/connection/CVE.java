@@ -23,8 +23,9 @@ public class CVE{
             Utils.getLogger().log(Level.SEVERE , "Error parsing vulnerabilities object or no vulnerabilities to scan");
             return;
         }
-        for(String vul : vulnerabilities)
-            sendRequest(vul);
+        for(String vul : vulnerabilities) {
+            sendRequest(vul.trim());
+        }
     }
     private void sendRequest(String vulnerability){
         if(url != null && Utils.valueExists(vulnerability)) {

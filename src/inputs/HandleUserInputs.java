@@ -20,7 +20,7 @@ public class HandleUserInputs {
         switch (userInput) {
             case "1" -> {
                 String target = checkingTarget(input, logger);
-                HandleUserInputs.setAuditActions(target);
+                HandleUserInputs.setAuditActions(Utils.getIpAddressFromDomain(target));
             }
             case "2" -> {
                 HandleDisplayForUser.printAvailableScan();
@@ -78,11 +78,10 @@ public class HandleUserInputs {
         try{
             Map <String , String> parameters = new HashMap<>();
             parameters.put("target" , target);
-            parameters.put("scan_type" , "single");
             HandleDisplayForUser.printMessage("Audit scan on target : " + target);
             HandleDisplayForUser.printMessage("This will take several minutes, please wait until the scan end");
             HandleDisplayForUser.printMessage("Scanning...");
-            BridgeBetweenClasses.runAuditAction(parameters);
+            BridgeBetweenClasses.runAuditAction(target);
         }
         catch(Exception e){
             e.printStackTrace();

@@ -1,5 +1,6 @@
 package bridge;
 
+import connection.ShodanApi;
 import document.PDFDocument;
 import outputs.HandleDisplayForUser;
 import utils.Const;
@@ -10,18 +11,8 @@ import java.util.Map;
 import java.util.logging.Level;
 
 public class BridgeBetweenClasses {
-    public static void runAuditAction(Map<String , String> data){
-        Connection Connection = new Connection();
-        for(Map.Entry entry : data.entrySet()){
-            Connection.getData().put((String) entry.getKey() , (String) entry.getValue());
-        }
-        if(data.containsKey("target") && data.containsKey("scan_type")) {
-            Connection.launchRequest(Const.AUDIT_ACTION);
-        }
-        else {
-            HandleDisplayForUser.printErrorMessage("Target or scan_type not set");
-            Utils.getLogger().log(Level.SEVERE, "Target or scan_type not set");
-        }
+    public static void runAuditAction(String target){
+        new ShodanApi().auditHost(target);
     }
     public static void runScanAction(String scanName , Map<String , String> data){
         Connection Connection = new Connection();
@@ -35,7 +26,6 @@ public class BridgeBetweenClasses {
             HandleDisplayForUser.printErrorMessage("Target or scan_type not set");
             Utils.getLogger().log(Level.SEVERE, "Target or scan_type not set");
         }
-
     }
 
     public static void printPDFDocument(String result){
