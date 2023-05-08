@@ -13,8 +13,6 @@ import java.util.Objects;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 public class Connection {
-    private final String apiKey = "dkjhj9iacgm63abk3bbpdzrgap7ie3b2zgikl9bxfsekmmjg";
-    private final Utils utils = new Utils();
     private final Logger LOG;
     private Response response = null;
     RequestBody body = null;
@@ -29,6 +27,7 @@ public class Connection {
             buildRequestBody(data);
             Request request;
             Request.Builder builder = new Request.Builder();
+            String apiKey = "dkjhj9iacgm63abk3bbpdzrgap7ie3b2zgikl9bxfsekmmjg";
             builder.url(handleUrlRequest(state))
                     .post(body)
                     .addHeader("content-type" , "multipart/form-data")
@@ -49,7 +48,7 @@ public class Connection {
     private void runScanInfo(JsonObject responseBody){
         scan_id = responseBody.get("scan_id").asString();
         LOG.log(Level.INFO , "scan_id : " + scan_id);
-        utils.buildParamRunScan(data , scan_id);
+        data.put("scan_id" , scan_id);
         sendRequest(Const.SCAN_INFO);
     }
 
@@ -66,7 +65,7 @@ public class Connection {
                 LOG.log(Level.INFO, "result : " + result);
                 HandleDisplayForUser.printMessage(result);
             } else {
-                utils.buildParamRunScan(data, scan_id);
+                data.put("scan_id" , scan_id);
                 sendRequest(Const.SCAN_RESULTS);
             }
         }
@@ -77,7 +76,7 @@ public class Connection {
     }
     private void handleResponse (int status , String state){
         try {
-            utils.responseLog(response , status , state);
+            Utils.responseLog(response , status , state);
             if(response.body() != null && (status == Const.STATUS_OK || status == Const.STATUS_CREATED || status == Const.STATUS_ACCEPTED)) {
                 data.clear();
                 String responseBody = response.body().string();
@@ -85,11 +84,11 @@ public class Connection {
                 if (Objects.equals(state, Const.START_SCAN))
                     runScanInfo(Json.parse(responseBody).asObject());
                 else if (Objects.equals(state, Const.SCAN_INFO)) {
-                    utils.buildParamRunScan(data , scan_id);
+                    data.put("scan_id" , scan_id);
                     sendRequest(Const.SCAN_STATUS);
                 }
                 else if(Objects.equals(state, Const.SCAN_STATUS)){
-                    utils.buildParamRunScan(data , scan_id);
+                    data.put("scan_id" , scan_id);
                     sendRequest(Const.SCAN_RESULTS);
                 }
                 else

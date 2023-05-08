@@ -15,9 +15,12 @@ import java.util.logging.Level;
 import static java.lang.System.exit;
 
 public class ShodanApi{
-    ShodanRestApi api = new ShodanRestApi(Const.SHODAN_API_KEY);
-    Map <String , String> bannerData = new HashMap<>();
-    Map <String , String> hostData = new HashMap<>();
+    private final ShodanRestApi api = new ShodanRestApi(Const.SHODAN_API_KEY);
+    private Map <String , String> bannerData = new HashMap<>();
+    private Map <String , String> hostData = new HashMap<>();
+    public ShodanApi(String target){
+        auditHost(target);
+    }
     public void auditHost(String target){
         try {
             Observable<Host> report = api.hostByIp(false, target);
@@ -93,5 +96,11 @@ public class ShodanApi{
     private void startCVEResearch(){
         System.out.println("vulnerabilities : " + hostData.get("vulnerability"));
        new CVE ("https://services.nvd.nist.gov/rest/json/cves/2.0?cveId=" , hostData.get("vulnerability"));
+    }
+    public Map<String , String>getBannerData(){
+        return bannerData;
+    }
+    public Map<String , String>getHostData(){
+        return hostData;
     }
 }
