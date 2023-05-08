@@ -106,24 +106,8 @@ public class Connection {
         }
     }
     public void launchRequest(String action){
-        if(action.equals(Const.AUDIT_ACTION)){
-            String target = "";
-            if(data.get(Const.TARGET) != null && !data.get(Const.TARGET).isEmpty()) {
-                target = data.get(Const.TARGET);
-            }
-            while(!handleAuditScanState()) {
-                if(target != null && !target.isEmpty())
-                    data.put(Const.TARGET , target);
-                else{
-                    LOG.log(Level.SEVERE , "target parameter not found");
-                }
-                sendRequest(Const.START_SCAN);
-            }
-        }
-        else{
-            ScanRequest.buildScan(data , action);
-            sendRequest(Const.START_SCAN);
-        }
+        ScanRequest.buildScan(data , action);
+        sendRequest(Const.START_SCAN);
     }
     private void buildRequestBody(Map <String , String> data){
         LOG.log(Level.INFO , "data : " + data);
@@ -144,61 +128,6 @@ public class Connection {
             return Const.SCAN_STATUS_URL;
         else
             return Const.SCAN_RESULTS_URL;
-    }
-
-    private boolean handleAuditScanState(){
-
-        if(Const.SCAN_PORT_DONE && !Const.AGGRESSIVE_SCAN_DONE && !Const.MALWARE_DETECTION_SCAN_DONE && !Const.SERVICE_DETECTION_SCAN_DONE
-                && !Const.OS_INFO_SCAN_DONE && !Const.FIREWALLING_SCAN_DONE){
-            ScanRequest.buildScan(data, Const.AGGRESSIVE_SCAN);
-            Const.AGGRESSIVE_SCAN_DONE = true;
-            LOG.log(Level.INFO , "Starting " + Const.AGGRESSIVE_SCAN);
-            HandleDisplayForUser.printMessage("Starting " + Const.AGGRESSIVE_SCAN);
-            return false;
-        }
-        else if(!Const.SCAN_PORT_DONE && !Const.AGGRESSIVE_SCAN_DONE && !Const.MALWARE_DETECTION_SCAN_DONE && !Const.SERVICE_DETECTION_SCAN_DONE
-                && !Const.OS_INFO_SCAN_DONE && !Const.FIREWALLING_SCAN_DONE){
-            ScanRequest.buildScan(data, Const.SCAN_PORT);
-            Const.SCAN_PORT_DONE = true;
-            LOG.log(Level.INFO , "Starting " + Const.SCAN_PORT);
-            HandleDisplayForUser.printMessage("Starting " + Const.SCAN_PORT);
-            return false;
-        }
-        else if(Const.SCAN_PORT_DONE && Const.AGGRESSIVE_SCAN_DONE && !Const.MALWARE_DETECTION_SCAN_DONE && !Const.SERVICE_DETECTION_SCAN_DONE
-                && !Const.OS_INFO_SCAN_DONE && !Const.FIREWALLING_SCAN_DONE){
-            ScanRequest.buildScan(data, Const.OS_INFO_SCAN);
-            Const.OS_INFO_SCAN_DONE = true;
-            LOG.log(Level.INFO , "Starting " + Const.OS_INFO_SCAN);
-            return false;
-        }
-        else if(Const.SCAN_PORT_DONE && Const.AGGRESSIVE_SCAN_DONE && !Const.MALWARE_DETECTION_SCAN_DONE && !Const.SERVICE_DETECTION_SCAN_DONE
-                && Const.OS_INFO_SCAN_DONE && !Const.FIREWALLING_SCAN_DONE){
-            ScanRequest.buildScan(data, Const.SERVICE_DETECTION_SCAN);
-            Const.SERVICE_DETECTION_SCAN_DONE = true;
-            LOG.log(Level.INFO , "Starting " + Const.SERVICE_DETECTION_SCAN);
-            HandleDisplayForUser.printMessage("Starting " + Const.SERVICE_DETECTION_SCAN);
-            return false;
-        }
-        else if(Const.SCAN_PORT_DONE && Const.AGGRESSIVE_SCAN_DONE && !Const.MALWARE_DETECTION_SCAN_DONE && Const.SERVICE_DETECTION_SCAN_DONE
-                && Const.OS_INFO_SCAN_DONE && !Const.FIREWALLING_SCAN_DONE){
-            ScanRequest.buildScan(data, Const.MALWARE_DETECTION_SCAN);
-            Const.MALWARE_DETECTION_SCAN_DONE = true;
-            LOG.log(Level.INFO , "Starting " + Const.MALWARE_DETECTION_SCAN);
-            HandleDisplayForUser.printMessage("Starting " + Const.MALWARE_DETECTION_SCAN);
-            return false;
-        }
-        else if(Const.SCAN_PORT_DONE && Const.AGGRESSIVE_SCAN_DONE && Const.MALWARE_DETECTION_SCAN_DONE && Const.SERVICE_DETECTION_SCAN_DONE
-                && Const.OS_INFO_SCAN_DONE && !Const.FIREWALLING_SCAN_DONE){
-            ScanRequest.buildScan(data , Const.FIREWALLING_SCAN);
-            Const.FIREWALLING_SCAN_DONE = true;
-            LOG.log(Level.INFO , "Starting " + Const.FIREWALLING_SCAN);
-            HandleDisplayForUser.printMessage("Starting " + Const.FIREWALLING_SCAN);
-            return false;
-        }
-        else {
-            LOG.log(Level.INFO, "Audit scan finished");
-            return true;
-        }
     }
     public Map<String , String> getData(){
         return data;

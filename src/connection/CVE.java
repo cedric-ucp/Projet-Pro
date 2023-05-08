@@ -170,8 +170,6 @@ public class CVE{
                 responseData.put("version", cvssData.getString("version"));
             if (cvssData.has("userInteraction"))
                 responseData.put("userInteraction", cvssData.getString("userInteraction"));
-
-            System.out.println("responseData " + responseData);
         }
         catch(Exception e){
             Utils.getLogger().log(Level.SEVERE, "Error while getting cvssData " + e);

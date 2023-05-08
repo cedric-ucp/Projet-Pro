@@ -95,9 +95,7 @@ public class Utils {
         return string != null && !string.isEmpty() && !string.isBlank() && !string.equals("unknown");
     }
     public static ArrayList<String> stringToArray(String string , String delimiter){
-        System.out.println("String to Array");
         string = string.substring(1 , string.length() - 1);
-        System.out.println("substring 1 : " + string);
         ArrayList <String> vulnerabilities = new ArrayList<>();
         for (String s : string.split(delimiter))
             vulnerabilities.add(s);

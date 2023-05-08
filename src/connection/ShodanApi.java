@@ -20,7 +20,6 @@ public class ShodanApi{
     Map <String , String> hostData = new HashMap<>();
     public void auditHost(String target){
         try {
-            System.out.println("host : " + target);
             Observable<Host> report = api.hostByIp(false, target);
             for (Host host : report.blockingIterable()) {
                 String[] vulnerabilities = host.getVulnerabilities();
@@ -44,7 +43,16 @@ public class ShodanApi{
             Utils.getLogger().log(Level.SEVERE , "Error while requesting Shodan api : " + e.getMessage());
             exit(1);
         }
-        startCVEResearch();
+        Utils.getLogger().log(Level.INFO , "Host data : " + hostData);
+        Utils.getLogger().log(Level.INFO , "Banner data : " + bannerData);
+        if(Utils.valueExists(hostData.get("vulnerability"))){
+            startCVEResearch();
+            Utils.getLogger().log(Level.INFO , "Target has CVE");
+        }
+        else{
+            //Do something (tell the user)
+            Utils.getLogger().log(Level.WARNING , "Target has not CVE");
+        }
     }
     public void buildBannerData(Banner banner){
         if(Utils.valueExists(banner.getTitle()) && !bannerData.containsKey("title"))
@@ -83,7 +91,7 @@ public class ShodanApi{
                 && bannerData.containsKey("data");
     }
     private void startCVEResearch(){
-        System.out.println("vulnerability : " + hostData.get("vulnerability"));
+        System.out.println("vulnerabilities : " + hostData.get("vulnerability"));
        new CVE ("https://services.nvd.nist.gov/rest/json/cves/2.0?cveId=" , hostData.get("vulnerability"));
     }
 }
