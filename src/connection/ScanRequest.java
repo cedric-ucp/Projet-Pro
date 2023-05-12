@@ -12,7 +12,7 @@ public class ScanRequest {
     }
 
     public static void osInfoScanV2(Map<String , String> data){
-        data.put("command" , "normal");
+        //data.put("command" , "normal");
         data.put("options" , "o");
         data.put("schedule" , "now");
     }
@@ -59,7 +59,7 @@ public class ScanRequest {
             case Const.SCAN_PORT -> scanPorts(data);
             case Const.MALWARE_DETECTION_SCAN -> malwareInfectionsScan(data);
             case Const.SERVICE_DETECTION_SCAN -> serviceDetectionScan(data);
-            case Const.OS_INFO_SCAN -> osInfoScan(data);
+            case Const.OS_INFO_SCAN -> osInfoScanV2(data);
             case Const.FIREWALLING_SCAN -> fireWallSettingsScan(data);
         }
     }

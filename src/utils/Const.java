@@ -1,6 +1,8 @@
 package utils;
 
 import org.apache.http.HttpStatus;
+import outputs.HandleDisplayForUser;
+
 public class Const {
     public static String REQUEST_ERROR_MESSAGE = "Api connection error";
     public static String REQUEST_SUCCESS_MESSAGE = "Request successfully";
@@ -50,4 +52,6 @@ public class Const {
     public static String NMAP_CONTENT_TYPE_KEY = "content-type";
     public static String NMAP_CONTENT_TYPE_VALUE = "multipart/form-data";
     public static String SHODAN_API_KEY = "9MN1Bi8M3nkCZSsxIVInWAbqCpgFXUs7";
+    public static Boolean STOP_LOADING_BAR = false;
+    public static HandleDisplayForUser display = new HandleDisplayForUser();
 }

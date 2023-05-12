@@ -12,9 +12,20 @@ import java.util.logging.Level;
 
 public class BridgeBetweenClasses {
     private static ShodanApi shodanApi;
-    public static void runAuditAction(String target){
+    public static void runAuditAction(String target) {
         shodanApi = new ShodanApi(target);
-        printShodanResults();
+        Const.display.thread.interrupt();
+        if (Const.display.thread.isAlive()){
+            printShodanResults();
+            try {
+                if (shodanApi.getCve() != null)
+                    printCveResults(shodanApi.getCve().getCveResults());
+                else
+                    Utils.getLogger().log(Level.WARNING, "No CVE results to print because cveResults map is null");
+            } catch (Exception e) {
+                Utils.getLogger().log(Level.SEVERE, "Error while trying to print audit results : " + e.getMessage());
+            }
+        }
     }
     public static void runScanAction(String scanName , Map<String , String> data){
         Connection Connection = new Connection();
@@ -22,7 +33,21 @@ public class BridgeBetweenClasses {
             Connection.getData().put((String) entry.getKey() , (String) entry.getValue());
         }
         if(data.containsKey("target") && data.containsKey("scan_type")) {
-            Connection.launchRequest(scanName);
+            String result = Connection.launchRequest(scanName);
+            try {
+                Const.display.thread.interrupt();
+                if (result != null && !result.equals("")) {
+                    if (Const.display.thread.isInterrupted()) {
+                        HandleDisplayForUser.printMessage(result);
+                    }
+                }
+                else{
+                    Utils.getLogger().log(Level.WARNING , "Unique scan results cannot be printed because scan results is empty or null");
+                }
+            }
+            catch(Exception e){
+                Utils.getLogger().log(Level.SEVERE , "Error while printing unique scan results : " + e.getMessage());
+            }
         }
         else {
             HandleDisplayForUser.printErrorMessage("Target or scan_type not set");
@@ -73,12 +98,12 @@ public class BridgeBetweenClasses {
                 HandleDisplayForUser.printMessage("HOSTNAMES : UNKNOWN");
             }
             if (Utils.valueExists(bannerData.get("options"))) {
-                HandleDisplayForUser.printMessage("OPTIONS : " + bannerData.get("options"));
+                HandleDisplayForUser.printMessage("OPTIONS : " + Utils.removeIndexFromString(bannerData.get("options") , "Options"));
             } else {
                 HandleDisplayForUser.printMessage("OPTIONS : UNKNOWN");
             }
             if (Utils.valueExists(bannerData.get("metadata"))) {
-                HandleDisplayForUser.printMessage("METADATA : " + bannerData.get("metadata"));
+                HandleDisplayForUser.printMessage("METADATA : " + Utils.removeIndexFromString(bannerData.get("metadata") , "Metadata"));
             } else {
                 HandleDisplayForUser.printMessage("METADATA : UNKNOWN");
             }
@@ -93,7 +118,7 @@ public class BridgeBetweenClasses {
                 HandleDisplayForUser.printMessage("DATA : UNKNOWN");
             }
             if (Utils.valueExists(bannerData.get("location"))) {
-                HandleDisplayForUser.printMessage("LOCATION : " + bannerData.get("location"));
+                HandleDisplayForUser.printMessage("LOCATION : " + Utils.removeIndexFromString(bannerData.get("location") , "Location"));
             } else {
                 HandleDisplayForUser.printMessage("LOCATION : UNKNOWN");
             }
@@ -130,5 +155,25 @@ public class BridgeBetweenClasses {
        printBannerData(shodanApi.getBannerData());
        HandleDisplayForUser.printMessage("==============================================================================");
        printHostData(shodanApi.getHostData());
+    }
+    public static void printCveResults(Map <String , Map <String , String>> cveResults){
+        try{
+        if(cveResults != null) {
+            for (Map.Entry entry : cveResults.entrySet()) {
+                String key = (String) entry.getKey();
+                Map<String, String> value = (Map<String, String>) entry.getValue();
+                if (value != null) {
+                    System.out.println("\n=========================== " + key.toUpperCase() + " ===========================\n");
+                    for (String mapKey : value.keySet())
+                        HandleDisplayForUser.printMessage(mapKey.toUpperCase() + " : " + value.get(mapKey));
+                }
+            }
+        }
+        else
+            Utils.getLogger().log(Level.WARNING , "cveResults map is null");
+        }
+        catch(Exception e){
+            Utils.getLogger().log(Level.WARNING , "Error while printing cveResults : " + e.getMessage());
+        }
     }
 }

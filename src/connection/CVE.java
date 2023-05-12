@@ -10,21 +10,27 @@ import utils.Utils;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Map;
 import java.util.logging.Level;
 
 public class CVE{
     private final String url;
     private final HashMap <String , String> responseData = new HashMap<>();
-    private final ArrayList<String> vulnerabilities;
+    private final HashMap <String , Map<String , String>> cveResults = new HashMap<>();
+
     public CVE(String url , String vulnerability){
         this.url = url;
-        vulnerabilities = Utils.stringToArray(vulnerability , ",");
+        ArrayList<String> vulnerabilities = Utils.stringToArray(vulnerability, ",");
         if(vulnerabilities == null || vulnerabilities.size() == 0){
             Utils.getLogger().log(Level.SEVERE , "Error parsing vulnerabilities object or no vulnerabilities to scan");
             return;
         }
         for(String vul : vulnerabilities) {
             sendRequest(vul.trim());
+            if(!responseData.isEmpty())
+                cveResults.put(vul , responseData);
+            else
+                Utils.getLogger().log(Level.WARNING , "responseData is null so no cveResults");
         }
     }
     private void sendRequest(String vulnerability){
@@ -174,6 +180,9 @@ public class CVE{
         catch(Exception e){
             Utils.getLogger().log(Level.SEVERE, "Error while getting cvssData " + e);
         }
+    }
+    public Map<String, Map<String, String>> getCveResults(){
+        return cveResults;
     }
 }
 

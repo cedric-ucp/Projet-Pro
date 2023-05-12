@@ -99,7 +99,6 @@ public class Utils {
         ArrayList <String> vulnerabilities = new ArrayList<>();
         for (String s : string.split(delimiter))
             vulnerabilities.add(s);
-
         if(vulnerabilities.size() > 0)
             return vulnerabilities;
         else
@@ -131,8 +130,8 @@ public class Utils {
         Utils.getLogger().log(Level.INFO , "Ip address valid");
         return true;
     }
-    private static boolean containsNoLetters(String string){
-        return Pattern.matches("[a-zA-Z]+" , string);
+    public static boolean containsNoLetters(String string){
+        return !Pattern.matches("[a-zA-Z]+" , string);
     }
     private static String removeProtocol(String target){
         try {
@@ -200,5 +199,19 @@ public class Utils {
             }
         }
         return "";
+    }
+    public static String removeIndexFromString(String string , String index){
+        try {
+            if (string.startsWith(index)) {
+                string = string.substring(index.length());
+                Utils.getLogger().log(Level.INFO, "String without Index : " + string);
+            } else {
+                Utils.getLogger().log(Level.WARNING, String.format("String %s doesnt contain %s index", string, index));
+            }
+        }
+        catch(Exception e){
+            Utils.getLogger().log(Level.INFO , String.format("Error while removing index %s from string %s : %s", string , index ,e.getMessage()));
+        }
+        return string;
     }
 }

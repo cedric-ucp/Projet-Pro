@@ -18,6 +18,7 @@ public class Connection {
     RequestBody body = null;
     private final Map<String , String> data = new HashMap<>();
     private String scan_id = "";
+    String result = "";
     public Connection(){
         LOG = Utils.getLogger();
     }
@@ -63,7 +64,7 @@ public class Connection {
                 LOG.log(Level.INFO, "command : " + command);
                 LOG.log(Level.INFO, "nmap_command : " + nmapCommand);
                 LOG.log(Level.INFO, "result : " + result);
-                HandleDisplayForUser.printMessage(result);
+                this.result = result;
             } else {
                 data.put("scan_id" , scan_id);
                 sendRequest(Const.SCAN_RESULTS);
@@ -104,9 +105,10 @@ public class Connection {
             LOG.log(Level.SEVERE , e.getMessage());
         }
     }
-    public void launchRequest(String action){
+    public String launchRequest(String action){
         ScanRequest.buildScan(data , action);
         sendRequest(Const.START_SCAN);
+        return result;
     }
     private void buildRequestBody(Map <String , String> data){
         LOG.log(Level.INFO , "data : " + data);

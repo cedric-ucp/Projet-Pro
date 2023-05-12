@@ -18,6 +18,7 @@ public class ShodanApi{
     private final ShodanRestApi api = new ShodanRestApi(Const.SHODAN_API_KEY);
     private Map <String , String> bannerData = new HashMap<>();
     private Map <String , String> hostData = new HashMap<>();
+    private CVE cve;
     public ShodanApi(String target){
         auditHost(target);
     }
@@ -94,13 +95,15 @@ public class ShodanApi{
                 && bannerData.containsKey("data");
     }
     private void startCVEResearch(){
-        System.out.println("vulnerabilities : " + hostData.get("vulnerability"));
-       new CVE ("https://services.nvd.nist.gov/rest/json/cves/2.0?cveId=" , hostData.get("vulnerability"));
+       cve = new CVE ("https://services.nvd.nist.gov/rest/json/cves/2.0?cveId=" , hostData.get("vulnerability"));
     }
     public Map<String , String>getBannerData(){
         return bannerData;
     }
     public Map<String , String>getHostData(){
         return hostData;
+    }
+    public CVE getCve(){
+        return cve;
     }
 }

@@ -8,16 +8,13 @@ import java.util.Scanner;
 
 public class Launch implements Runnable {
     public Launch(){
-        Utils.configLog();
-        run();
+        new Thread(this).start();
     }
-
-
     @Override
     public void run() {
         while(Boolean.TRUE) {
             Scanner userInput = new Scanner(System.in);
-            HandleDisplayForUser.printWelcomeMessage();
+            HandleDisplayForUser.printOptions();
             HandleUserInputs.handleUserAction(userInput);
         }
     }

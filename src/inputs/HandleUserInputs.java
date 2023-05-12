@@ -1,5 +1,6 @@
 package inputs;
 
+import utils.Const;
 import utils.Utils;
 import bridge.BridgeBetweenClasses;
 import outputs.HandleDisplayForUser;
@@ -53,7 +54,7 @@ public class HandleUserInputs {
         return target;
     }
     private static boolean checkChosenScan(String chosenScan){
-        if(!containsNoLetters(chosenScan)) {
+        if(Utils.containsNoLetters(chosenScan)) {
             int scan = Integer.parseInt(chosenScan);
             return scan == 1 || scan == 2 || scan == 3 || scan == 4 || scan == 5;
         }
@@ -80,7 +81,8 @@ public class HandleUserInputs {
             parameters.put("target" , target);
             HandleDisplayForUser.printMessage("Audit scan on target : " + target);
             HandleDisplayForUser.printMessage("This will take several minutes, please wait until the scan end");
-            HandleDisplayForUser.printMessage("Scanning...");
+            Const.display = new HandleDisplayForUser();
+            Const.display.thread.start();
             BridgeBetweenClasses.runAuditAction(target);
         }
         catch(Exception e){
@@ -96,7 +98,8 @@ public class HandleUserInputs {
             parameters.put("scan_type", "single");
             HandleDisplayForUser.printProcessingScanMessage(chosenScan , target);
             HandleDisplayForUser.printMessage("This will take several minutes, please wait until the scan end");
-            HandleDisplayForUser.printMessage("Scanning...");
+            Const.display = new HandleDisplayForUser();
+            Const.display.thread.start();
             BridgeBetweenClasses.runScanAction(scanName , parameters);
         }
         catch(Exception e){
@@ -115,7 +118,7 @@ public class HandleUserInputs {
         return true;
     }
     private static boolean checkTargetIpAddress(String ip){
-        if(ip.length() <= 16 && ip.length() >= 7 && !containsNoLetters(ip)){
+        if(ip.length() <= 16 && ip.length() >= 7 && Utils.containsNoLetters(ip)){
             while(ip.length() > 3){
                 int delimiterIndex = ip.indexOf(".");
                 if(delimiterIndex >= 0){
@@ -140,7 +143,6 @@ public class HandleUserInputs {
         Utils.getLogger().log(Level.INFO , "Ip address valid");
         return true;
     }
-    private static boolean containsNoLetters(String string){
-        return Pattern.matches("[a-zA-Z]+" , string);
-    }
+
+
 }
