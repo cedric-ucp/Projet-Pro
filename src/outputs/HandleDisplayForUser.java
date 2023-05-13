@@ -32,6 +32,7 @@ public class HandleDisplayForUser implements Runnable {
         printMessage(runScan);
         for(int i = 0 ; i < "******************* CHOOSE ACTION *******************".length() ; i++)
             System.out.print(GREEN + "*");
+        System.out.println(GREEN + "\n");
     }
     public static void printMessage(String message){
         String GREEN = "\u001B[32m";

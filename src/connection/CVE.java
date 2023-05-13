@@ -53,8 +53,9 @@ public class CVE{
                         fillResponseData(new JSONObject(responseBody));
                     }
                 }
-                else
-                    Utils.getLogger().log(Level.SEVERE , "No response from request");
+                else {
+                    Utils.getLogger().log(Level.SEVERE, "No response from request");
+                }
             }
             catch(Exception e) {
                 Utils.getLogger().log(Level.SEVERE, e.getMessage());

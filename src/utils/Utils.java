@@ -1,13 +1,12 @@
 package utils;
 import okhttp3.Response;
+import outputs.HandleDisplayForUser;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
+import java.net.URL;
+import java.util.*;
 import java.util.logging.FileHandler;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -105,7 +104,7 @@ public class Utils {
             return null;
     }
     public static boolean checkTargetIpAddress(String ip){
-        if(ip.length() <= 16 && ip.length() >= 7 && !containsNoLetters(ip)){
+        if(ip.length() <= 16 && ip.length() >= 7 && containsNoLetters(ip)){
             while(ip.length() > 3){
                 int delimiterIndex = ip.indexOf(".");
                 if(delimiterIndex >= 0){
@@ -183,7 +182,7 @@ public class Utils {
                 return ipAddress;
             }
             else {
-                Utils.getLogger().log(Level.SEVERE , "Address is not parsed : " + ipAddress);
+                Utils.getLogger().log(Level.SEVERE , "state : " + state + " Address is not parsed : " + ipAddress);
                 return "";
             }
         }
@@ -194,7 +193,7 @@ public class Utils {
                 return ipAddress;
             }
             else{
-                Utils.getLogger().log(Level.SEVERE , "Address is not parsed : " + ipAddress);
+                Utils.getLogger().log(Level.SEVERE , "state : " + state + " Address is not parsed : " + ipAddress);
                 return "";
             }
         }
@@ -213,5 +212,54 @@ public class Utils {
             Utils.getLogger().log(Level.INFO , String.format("Error while removing index %s from string %s : %s", string , index ,e.getMessage()));
         }
         return string;
+    }
+    private static boolean checkTargetDomain(String domain){
+        try {
+            new URL(domain).toURI();
+        }
+        catch(Exception e){
+            Utils.getLogger().log(Level.SEVERE , e.getMessage());
+            return false;
+        }
+        return true;
+    }
+    public static boolean checkTargetUser(String target){
+        Utils.getLogger().log(Level.INFO , "Target : " + target);
+        try {
+            if (target != null && !target.isBlank() && !target.isEmpty()) {
+                return Utils.checkTargetIpAddress(target) || checkTargetDomain(target);
+            }
+        }
+        catch(Exception e){
+            e.printStackTrace();
+            Utils.getLogger().log(Level.SEVERE , e.getMessage());
+        }
+        return false;
+    }
+    public static boolean checkChosenScan(String chosenScan){
+        try {
+            if (Utils.containsNoLetters(chosenScan)) {
+                int scan = Integer.parseInt(chosenScan);
+                return scan == 1 || scan == 2 || scan == 3 || scan == 4 || scan == 5;
+            } else {
+                return false;
+            }
+        }
+        catch(Exception e){
+            Utils.getLogger().log(Level.SEVERE , "Error while checkin chosen scan  : " + e.getMessage());
+            return false;
+        }
+    }
+    public static String checkingTarget(Scanner input, Logger logger) {
+        HandleDisplayForUser.printMessage("Enter target ip or domain");
+        String target = input.nextLine();
+        logger.log(Level.INFO , "User entered target : " + target);
+        while (!Utils.checkTargetUser(target)) {
+            HandleDisplayForUser.printErrorMessage("Bad target address provided !");
+            logger.log(Level.SEVERE, "Bad target format");
+            HandleDisplayForUser.printMessage("Enter valid target ip or domain");
+            target = input.nextLine();
+        }
+        return target;
     }
 }

@@ -2,6 +2,7 @@ package bridge;
 
 import connection.ShodanApi;
 import document.PDFDocument;
+import inputs.HandleUserInputs;
 import outputs.HandleDisplayForUser;
 import utils.Const;
 import connection.Connection;
@@ -22,10 +23,12 @@ public class BridgeBetweenClasses {
                     printCveResults(shodanApi.getCve().getCveResults());
                 else
                     Utils.getLogger().log(Level.WARNING, "No CVE results to print because cveResults map is null");
+                HandleUserInputs.handleReport();
             } catch (Exception e) {
                 Utils.getLogger().log(Level.SEVERE, "Error while trying to print audit results : " + e.getMessage());
             }
         }
+
     }
     public static void runScanAction(String scanName , Map<String , String> data){
         Connection Connection = new Connection();
