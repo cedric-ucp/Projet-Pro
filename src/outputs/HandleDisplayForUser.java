@@ -20,19 +20,14 @@ public class HandleDisplayForUser implements Runnable {
         System.out.println(GREEN + message);
     }
     public static void printOptions(){
-        String GREEN = "\u001B[32m";
-        System.out.println("\n\n******************* CHOOSE ACTION *******************");
-        String runAudit = "[1] RUN AUDIT";
-        String runScan = "[2] RUN SCAN";
-        for(int i = 0 ; i < "*******************".length() ; i++) {
-            runAudit = " " + runAudit;
-            runScan = " " + runScan;
-        }
-        printMessage(runAudit);
-        printMessage(runScan);
-        for(int i = 0 ; i < "******************* CHOOSE ACTION *******************".length() ; i++)
-            System.out.print(GREEN + "*");
-        System.out.println(GREEN + "\n");
+        String message = "GIT REPO :: https://github.com/cedric-ucp/Projet-Pro.git\n\n";
+        message += "####################################\n" +
+                "#\t\t\t\t   #\n" +
+                "#\t[1]RUN AUDIT \t\t   #\n" +
+                "#\t[2]RUN SCAN\t           # \n" +
+                "#\t\t\t\t   #\n" +
+                "####################################";
+     printMessage(message);
     }
     public static void printMessage(String message){
         String GREEN = "\u001B[32m";

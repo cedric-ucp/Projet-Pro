@@ -4,6 +4,7 @@ import com.fooock.shodan.ShodanRestApi;
 import com.fooock.shodan.model.banner.Banner;
 import com.fooock.shodan.model.host.Host;
 import io.reactivex.Observable;
+import outputs.HandleDisplayForUser;
 import utils.Const;
 import utils.Utils;
 import java.util.Arrays;
@@ -12,17 +13,16 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.logging.Level;
 
-import static java.lang.System.exit;
-
 public class ShodanApi{
-    private final ShodanRestApi api = new ShodanRestApi(Const.SHODAN_API_KEY);
-    private Map <String , String> bannerData = new HashMap<>();
-    private Map <String , String> hostData = new HashMap<>();
+    private final ShodanRestApi api ;
+    private final Map <String , String> bannerData = new HashMap<>();
+    private final Map <String , String> hostData = new HashMap<>();
     private CVE cve;
     public ShodanApi(String target){
+        api = new ShodanRestApi(Const.SHODAN_API_KEY);
         auditHost(target);
     }
-    public void auditHost(String target){
+    private void auditHost(String target){
         try {
             Observable<Host> report = api.hostByIp(false, target);
             for (Host host : report.blockingIterable()) {
@@ -32,8 +32,14 @@ public class ShodanApi{
                 if (vulnerabilities != null && vulnerabilities.length > 0) {
                     hostData.put("vulnerability", Arrays.toString(vulnerabilities));
                 }
+                else{
+                    Utils.getLogger().log(Level.WARNING , "No Vulnerabilities found");
+                }
                 if (organization != null && !organization.isEmpty()) {
                     hostData.put("organization", organization);
+                }
+                else{
+                    Utils.getLogger().log(Level.WARNING , "No Organisations found");
                 }
                 Iterator<Banner> bannerIterator = host.getBanners().iterator();
                 Banner currentBanner = bannerIterator.next();
@@ -45,7 +51,7 @@ public class ShodanApi{
         }
         catch(Exception e){
             Utils.getLogger().log(Level.SEVERE , "Error while requesting Shodan api : " + e.getMessage());
-            exit(1);
+            HandleDisplayForUser.printErrorMessage("Error while executing your request");
         }
         Utils.getLogger().log(Level.INFO , "Host data : " + hostData);
         Utils.getLogger().log(Level.INFO , "Banner data : " + bannerData);

@@ -17,7 +17,7 @@ public class Utils {
     private static final Logger LOG = Logger.getLogger("LOG");
     public static void configLog(){
         try {
-            String path = "./logs/project.log";
+            String path = "./project.log";
             FileHandler fileHandler = new FileHandler(path , true);
             LOG.addHandler(fileHandler);
             SimpleFormatter formatter = new SimpleFormatter();
@@ -252,7 +252,7 @@ public class Utils {
     }
     public static String checkingTarget(Scanner input, Logger logger) {
         HandleDisplayForUser.printMessage("Enter target ip or domain");
-        String target = input.nextLine();
+        String target = input.nextLine().trim();
         logger.log(Level.INFO , "User entered target : " + target);
         while (!Utils.checkTargetUser(target)) {
             HandleDisplayForUser.printErrorMessage("Bad target address provided !");

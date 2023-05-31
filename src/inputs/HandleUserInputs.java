@@ -16,7 +16,7 @@ import java.util.regex.Pattern;
 public class HandleUserInputs {
     public static void handleUserAction(Scanner input){
         Logger logger = Utils.getLogger();
-        String userInput = input.nextLine();
+        String userInput = input.nextLine().trim();
         logger.log(Level.INFO, "User input : " + userInput);
         switch (userInput) {
             case "1" -> {
@@ -25,7 +25,7 @@ public class HandleUserInputs {
             }
             case "2" -> {
                 HandleDisplayForUser.printAvailableScan();
-                String chosenScan = input.nextLine();
+                String chosenScan = input.nextLine().trim();
                 logger.log(Level.INFO , "User chosen scan : " + chosenScan);
                 while (!Utils.checkChosenScan(chosenScan)){
                     HandleDisplayForUser.printErrorMessage("Choose available Scan");
@@ -74,7 +74,7 @@ public class HandleUserInputs {
             Utils.getLogger().log(Level.SEVERE , e.getMessage());
         }
     }
-    public static void handleReport(String result){
+    public static void handleReport(){
 
         boolean correctInput = false;
         while (!correctInput) {
@@ -84,19 +84,18 @@ public class HandleUserInputs {
             Utils.getLogger().log(Level.INFO , "User input : " + userInput);
 
             if(!userInput.isEmpty() && !userInput.isBlank()) {
-                switch (userInput) {
+                switch (userInput.toLowerCase()){
                     case "yes" -> {
-                        //no print in console
-                        BridgeBetweenClasses.printPDFDocument(result);
+                        Utils.getLogger().log(Level.INFO , "Building PDF report");
+                        BridgeBetweenClasses.printPDFDocument(BridgeBetweenClasses.result + BridgeBetweenClasses.cveResults);
                         correctInput = true;
                     }
                     case "no" -> {
                         Utils.getLogger().log(Level.INFO, "No print in PDF document");
                         correctInput = true;
-                        //print in console
                     }
                     default -> {
-                        Utils.getLogger().log(Level.WARNING, "Wrong input !");
+                        Utils.getLogger().log(Level.WARNING, "Wrong input : " + userInput + "!");
                         HandleDisplayForUser.printErrorMessage("Wrong input ! Enter yes or no");
                     }
                 }

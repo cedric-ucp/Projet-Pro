@@ -40,18 +40,11 @@ public class Const {
     public static final String MALWARE_DETECTION_SCAN = "MALWARE DETECTION";
     public static final String SERVICE_DETECTION_SCAN = "SERVICE DETECTION";
     public static final String FIREWALLING_SCAN = "FIREWALLING SCAN";
-
-    public static boolean SCAN_PORT_DONE = false;
-    public static boolean OS_INFO_SCAN_DONE = false;
-    public static boolean AGGRESSIVE_SCAN_DONE = false;
-    public static boolean MALWARE_DETECTION_SCAN_DONE = false;
-    public static boolean SERVICE_DETECTION_SCAN_DONE = false;;
-    public static boolean FIREWALLING_SCAN_DONE = false;
     public static String NMAP_API_KEY_VALUE = "dkjhj9iacgm63abk3bbpdzrgap7ie3b2zgikl9bxfsekmmjg";
     public static String NMAP_API_KEY_KEY = "NMAP-API-KEY";
     public static String NMAP_CONTENT_TYPE_KEY = "content-type";
     public static String NMAP_CONTENT_TYPE_VALUE = "multipart/form-data";
-    public static String SHODAN_API_KEY = "9MN1Bi8M3nkCZSsxIVInWAbqCpgFXUs7";
+    public static String SHODAN_API_KEY = "pSeIs6iC4leTsGGENTS5DEBx6yoo0C6e";
     public static Boolean STOP_LOADING_BAR = false;
     public static HandleDisplayForUser display = new HandleDisplayForUser();
 }

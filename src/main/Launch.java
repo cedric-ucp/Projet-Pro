@@ -2,7 +2,6 @@ package main;
 
 import inputs.HandleUserInputs;
 import outputs.HandleDisplayForUser;
-import utils.Utils;
 
 import java.util.Scanner;
 

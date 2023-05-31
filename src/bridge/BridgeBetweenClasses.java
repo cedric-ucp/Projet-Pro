@@ -13,19 +13,27 @@ import java.util.logging.Level;
 
 public class BridgeBetweenClasses {
     private static ShodanApi shodanApi;
+    public static String result = "";
+    public static String cveResults = "";
     public static void runAuditAction(String target) {
         shodanApi = new ShodanApi(target);
         Const.display.thread.interrupt();
         if (Const.display.thread.isAlive()){
-            printShodanResults();
-            try {
-                if (shodanApi.getCve() != null)
-                    printCveResults(shodanApi.getCve().getCveResults());
-                else
-                    Utils.getLogger().log(Level.WARNING, "No CVE results to print because cveResults map is null");
-                HandleUserInputs.handleReport();
-            } catch (Exception e) {
-                Utils.getLogger().log(Level.SEVERE, "Error while trying to print audit results : " + e.getMessage());
+            if(!shodanApi.getBannerData().isEmpty() &&  !shodanApi.getHostData().isEmpty()) {
+                printShodanResults();
+                try {
+                    if (shodanApi.getCve() != null)
+                        printCveResults(shodanApi.getCve().getCveResults());
+                    else
+                        Utils.getLogger().log(Level.WARNING, "No CVE results to print because cveResults map is null");
+                    if (!result.equals(""))
+                        HandleUserInputs.handleReport();
+                } catch (Exception e) {
+                    Utils.getLogger().log(Level.SEVERE, "Error while trying to print audit results : " + e.getMessage());
+                }
+            }
+            else{
+                    Utils.getLogger().log(Level.SEVERE , "Nothing to print cause target's banner data and host data are null");
             }
         }
 
@@ -59,76 +67,95 @@ public class BridgeBetweenClasses {
     }
 
     public static void printPDFDocument(String result){
-        PDFDocument document = new PDFDocument();
-        document.addParagraph(result);
+        try {
+            Utils.getLogger().log(Level.INFO , result);
+            PDFDocument document = new PDFDocument();
+            document.addParagraph(result);
+        }
+        catch(Exception e){
+            Utils.getLogger().log(Level.SEVERE , "Error while building pdf document : " + e.getMessage());
+        }
     }
     public static void printBannerData(Map <String , String> bannerData){
         //Print bannerData first
         try {
             if (Utils.valueExists(bannerData.get("title"))) {
-                HandleDisplayForUser.printMessage("TITLE : " + bannerData.get("title"));
-            } else {
-                HandleDisplayForUser.printMessage("TITLE : UNKNOWN");
+                result += "TITLE : " + bannerData.get("title") + "\n";
+            }
+            else {
+                result += "TITLE : UNKNOWN" + "\n";
             }
             if (Utils.valueExists(bannerData.get("ip"))) {
-                HandleDisplayForUser.printMessage("IP : " + bannerData.get("ip"));
-            } else {
-                HandleDisplayForUser.printMessage("IP : UNKNOWN");
+                result += "IP : " + bannerData.get("ip") + "\n";
+            }
+            else {
+                result += "IP : UNKNOWN" + "\n";
             }
             if (Utils.valueExists(bannerData.get("version"))) {
-                HandleDisplayForUser.printMessage("VERSION : " + bannerData.get("version"));
-            } else {
-                HandleDisplayForUser.printMessage("VERSION : UNKNOWN");
+                result += "VERSION : " + bannerData.get("version") + "\n";
+            }
+            else {
+                result += "VERSION : UNKNOWN" + "\n";
             }
             if (Utils.valueExists(bannerData.get("deviceType"))) {
-                HandleDisplayForUser.printMessage("DEVICE TYPE : " + bannerData.get("deviceType"));
-            } else {
-                HandleDisplayForUser.printMessage("DEVICE TYPE : UNKNOWN");
+                result += "DEVICE TYPE : " + bannerData.get("deviceType") + "\n";
+            }
+            else {
+                result += "DEVICE TYPE : UNKNOWN" + "\n";
             }
             if (Utils.valueExists(bannerData.get("os"))) {
-                HandleDisplayForUser.printMessage("OS : " + bannerData.get("os"));
-            } else {
-                HandleDisplayForUser.printMessage("OS : UNKNOWN");
+                result += "OS : " + bannerData.get("os") + "\n";
+            }
+            else {
+                result += "OS : UNKNOWN" + "\n";
             }
             if (Utils.valueExists(bannerData.get("domains"))) {
-                HandleDisplayForUser.printMessage("DOMAINS : " + bannerData.get("domains"));
-            } else {
-                HandleDisplayForUser.printMessage("DOMAINS : UNKNOWN");
+                result += "DOMAINS : " + bannerData.get("domains") + "\n";
+            }
+            else {
+                result += "DOMAINS : UNKNOWN" + "\n";
             }
             if (Utils.valueExists(bannerData.get("hostnames"))) {
-                HandleDisplayForUser.printMessage("HOSTNAMES : " + bannerData.get("hostnames"));
-            } else {
-                HandleDisplayForUser.printMessage("HOSTNAMES : UNKNOWN");
+                result += "HOSTNAMES : " + bannerData.get("hostnames") + "\n";
+            }
+            else {
+                result += "HOSTNAMES : UNKNOWN" + "\n";
             }
             if (Utils.valueExists(bannerData.get("options"))) {
-                HandleDisplayForUser.printMessage("OPTIONS : " + Utils.removeIndexFromString(bannerData.get("options") , "Options"));
-            } else {
-                HandleDisplayForUser.printMessage("OPTIONS : UNKNOWN");
+                result += "OPTIONS : " + Utils.removeIndexFromString(bannerData.get("options") , "Options") + "\n";
+            }
+            else {
+                result += "OPTIONS : UNKNOWN" + "\n";
             }
             if (Utils.valueExists(bannerData.get("metadata"))) {
-                HandleDisplayForUser.printMessage("METADATA : " + Utils.removeIndexFromString(bannerData.get("metadata") , "Metadata"));
-            } else {
-                HandleDisplayForUser.printMessage("METADATA : UNKNOWN");
+                result += "METADATA : " + Utils.removeIndexFromString(bannerData.get("metadata") , "Metadata") + "\n";
+            }
+            else {
+                result += "METADATA : UNKNOWN" + "\n";
             }
             if (Utils.valueExists(bannerData.get("port"))) {
-                HandleDisplayForUser.printMessage("PORT : " + bannerData.get("port"));
-            } else {
-                HandleDisplayForUser.printMessage("PORT : UNKNOWN");
+                result += "PORT : " + bannerData.get("port") + "\n";
+            }
+            else {
+                result += "PORT : UNKNOWN" + "\n";
             }
             if (Utils.valueExists(bannerData.get("data"))) {
-                HandleDisplayForUser.printMessage("DATA : " + bannerData.get("data"));
-            } else {
-                HandleDisplayForUser.printMessage("DATA : UNKNOWN");
+                result += "DATA : " + bannerData.get("data") + "\n";
+            }
+            else {
+                result += "DATA : UNKNOWN" + "\n";
             }
             if (Utils.valueExists(bannerData.get("location"))) {
-                HandleDisplayForUser.printMessage("LOCATION : " + Utils.removeIndexFromString(bannerData.get("location") , "Location"));
-            } else {
-                HandleDisplayForUser.printMessage("LOCATION : UNKNOWN");
+                result += "LOCATION : " + Utils.removeIndexFromString(bannerData.get("location") , "Location") + "\n";
+            }
+            else {
+                result += "LOCATION : UNKNOWN" + "\n";
             }
             if (Utils.valueExists(bannerData.get("sslInfo"))) {
-                HandleDisplayForUser.printMessage("SSL INFO : " + bannerData.get("sslInfo"));
-            } else {
-                HandleDisplayForUser.printMessage("SSL INFO : UNKNOWN");
+                result += "SSL INFO : " + bannerData.get("sslInfo") + "\n";
+            }
+            else {
+                result += "SSL INFO : UNKNOWN" + "\n";
             }
         }
         catch(Exception e){
@@ -138,16 +165,16 @@ public class BridgeBetweenClasses {
     public static void printHostData(Map <String , String> hostData){
         try{
             if(hostData.containsKey("organization")){
-                HandleDisplayForUser.printMessage("ORGANIZATION : " + hostData.get("organization"));
+                result += "ORGANIZATION : " + hostData.get("organization") + "\n";
             }
             else{
-                HandleDisplayForUser.printMessage("ORGANIZATION : UNKNOWN");
+                result += "ORGANIZATION : UNKNOWN" + "\n";
             }
             if(hostData.containsKey("vulnerability")){
-                HandleDisplayForUser.printMessage("Vulnerabilities : " + hostData.get("vulnerability"));
+                result += "Vulnerabilities : " + hostData.get("vulnerability") + "\n";
             }
             else{
-                HandleDisplayForUser.printMessage("Vulnerabilities : UNKNOWN");
+                result += "Vulnerabilities : UNKNOWN" + "\n";
             }
         }
         catch(Exception e){
@@ -156,21 +183,24 @@ public class BridgeBetweenClasses {
     }
     public static void printShodanResults(){
        printBannerData(shodanApi.getBannerData());
-       HandleDisplayForUser.printMessage("==============================================================================");
+       result += "\n==============================================================================\n";
        printHostData(shodanApi.getHostData());
+       HandleDisplayForUser.printMessage(result);
     }
-    public static void printCveResults(Map <String , Map <String , String>> cveResults){
+    public static void printCveResults(Map<String, Map<String, String>> cveResults){
         try{
         if(cveResults != null) {
             for (Map.Entry entry : cveResults.entrySet()) {
                 String key = (String) entry.getKey();
                 Map<String, String> value = (Map<String, String>) entry.getValue();
                 if (value != null) {
-                    System.out.println("\n=========================== " + key.toUpperCase() + " ===========================\n");
-                    for (String mapKey : value.keySet())
-                        HandleDisplayForUser.printMessage(mapKey.toUpperCase() + " : " + value.get(mapKey));
+                    BridgeBetweenClasses.cveResults += "\n=========================== " + key.toUpperCase() + " ===========================\n";
+                    for (String mapKey : value.keySet()){
+                        BridgeBetweenClasses.cveResults += mapKey.toUpperCase() + " : " + value.get(mapKey) + "\n";
+                    }
                 }
             }
+            HandleDisplayForUser.printMessage(BridgeBetweenClasses.cveResults);
         }
         else
             Utils.getLogger().log(Level.WARNING , "cveResults map is null");
