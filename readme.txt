@@ -33,7 +33,10 @@
 		AUDIT TOOL a été créée en JAVA, il a donc besoin que sur la machine hôte se trouve un JAVA SE Development Kit disponible.
 		Il est donc important d'avoir un JAVA SE Development Kit sur son système et plus précisément le JAVA SE Development Kit version 18.0.2.1.
 		Pour l'installer sur son système, se référer à ce lien https://www.oracle.com/java/technologies/javase/jdk18-archive-downloads.html
-	
+		
+		Pour lancer le programme, il suffit d'effectuer la commande suivante en CLI :
+			java -jar Projet-Pro.
+			
 	III. Informations Utiles
 	
 		AUDIT TOOL permet le choix de générer un rapport après avoir avoir effectué un audit sur une cible.
